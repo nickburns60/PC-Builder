@@ -1,0 +1,22 @@
+Processor Selection Options
+
+Brand|Model|Socket|RAM Supported|Wattage|Price
+
+Intel|i5-12600K 12th Gen 10 cores 3.7 to 4.9 GHz|LGA 1700|DDR4/DDR5|125|300.00
+Intel|i7-12700K 12th Gen 12 cores 2.7 to 5.0 GHz|LGA 1700|DDR4/DDR5|125|420.00
+Intel|i9-12900K 12th Gen 16 cores 3.2 to 5.1 GHz|LGA 1700|DDR4/DDR5|125|620.00
+Intel|i5-13600K 13th Gen 14 cores 3.5 to 5.1 GHz|LGA 1700|DDR4/DDR5|125|340.00
+Intel|i7-13700K 13th Gen 16 cores 3.4 to 5.4 GHz|LGA 1700|DDR4/DDR5|125|490.00
+Intel|i9-13900K 13th Gen 24 cores 3.0 to 5.8 GHz|LGA 1700|DDR4/DDR5|125|690.00
+Intel|i5-14600K 14th Gen 14 cores 4.0 to 5.3 GHz|LGA 1700|DDR4/DDR5|125|340.00
+Intel|i7-14700K 14th Gen 20 cores 4.3 to 5.6 GHz|LGA 1700|DDR4/DDR5|125|445.00
+Intel|i9-14900K 14th Gen 24 cores 4.4 to 6.0 GHz|LGA 1700|DDR4/DDR5|125|620.00
+
+AMD|Ryzen 5 5600X 6 cores 3.7 to 4.6 GHz|AM4|DDR4|2|299.00
+AMD|Ryzen 7 5800X 8 cores 3.8 to 4.7 GHz|AM4|DDR4|2|449.00
+AMD|Ryzen 9 5900X 12 cores 3.7 to 4.8 GHz|AM4|DDR4|2|549.00
+AMD|Ryzen 5 7600X 6 cores 4.7 to 5.3 GHz|AM5|DDR5|3|299.00
+AMD|Ryzen 7 7700X 8 cores 4.5 to 5.4 GHz|AM5|DDR5|3|399.00
+AMD|Ryzen 9 7950X 16 cores 4.5 to 5.7 GHz|AM5|DDR5|2|699.00
+
+
