@@ -1,6 +1,6 @@
 Case Options
 
-Brand|Model|Enclosure Type|Color|RGB|Dimensions (Length/Width)|Fans Included|Price
+Brand|Model|Enclosure Type|Color|RGB|Dimensions (Length/Width)'mm'|Fans Included|Price
 
 Corsair|iCue 5000D RGB Airflow|ATX Mid-Tower|Black|Yes|520/245|3|220.00
 NZXT|H6 Flow RGB|ATX Mid-Tower|White|Yes|414/284|3|135.00
