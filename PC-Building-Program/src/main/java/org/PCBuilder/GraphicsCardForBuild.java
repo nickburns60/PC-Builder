@@ -7,6 +7,7 @@ public class GraphicsCardForBuild implements Purchasable{
     private int recommendedPSU;
     private double price;
 
+
     public GraphicsCardForBuild(String model, int length, int width, int recommendedPSU, double price) {
         this.model = model;
         this.length = length;

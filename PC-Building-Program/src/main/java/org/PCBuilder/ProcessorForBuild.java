@@ -6,6 +6,7 @@ public class ProcessorForBuild implements Purchasable{
     private String compatibleRAM;
     private double price;
 
+
     public ProcessorForBuild(String model, String socket, String compatibleRAM, double price) {
         this.model = model;
         this.socket = socket;

@@ -7,6 +7,7 @@ public class MoboForBuild implements Purchasable{
     private String compatibleRAM;
     private double price;
 
+
     public MoboForBuild(String model, String socket, String formFactor, String compatibleRAM, double price) {
         this.model = model;
         this.socket = socket;
@@ -34,8 +35,10 @@ public class MoboForBuild implements Purchasable{
 
     public void compatible(ProcessorForBuild processor) throws PartCompatibilityException{
         if (!socket.equals(processor.getSocket())){
-            throw new PartCompatibilityException("Selected part " + "'" + model + "' does not have a 'socket' type " +
-                    "compatible with the processor you selected.");
+            throw new PartCompatibilityException("Selected part " + "'" + model + "' does not have a 'socket type' " +
+                    "compatible with the processor you selected. \n Please make sure 'Socket' on your " +
+                    "selected processor matches the motherboard you choose." +
+                    "This is the socket from your processor: " + processor.getSocket());
         }
     }
 

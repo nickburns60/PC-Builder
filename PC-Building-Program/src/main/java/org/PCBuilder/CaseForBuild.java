@@ -7,6 +7,7 @@ public class CaseForBuild implements Purchasable{
     private int width;
     private double price;
 
+
     public CaseForBuild(String model, String enclosureType, int length, int width, double price) {
         this.model = model;
         this.enclosureType = enclosureType;

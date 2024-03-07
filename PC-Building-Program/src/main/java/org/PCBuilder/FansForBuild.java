@@ -10,6 +10,8 @@ public class FansForBuild implements Purchasable{
     public double getPrice(){
         return price;
     }
+
+
     public FansForBuild(String model, int size, int numOfFans, double price) {
         this.model = model;
         this.size = size;

@@ -103,7 +103,7 @@ public class Main {
                     //splits variable into separate parts, each one is its own specification
                     String[] specs = lineSelected.split("\\|");
 
-                    //if else statements to catch and assign specs to classes that correspond with the current part being selected
+                    //if else statements to catch and add specs to cart
                     if(pcComponent.getName().equals("Processor")){
                         ProcessorForBuild cpu = new ProcessorForBuild(specs[1], specs[2], specs[3], Double.parseDouble(specs[4]));
                         partCart.add(cpu);
@@ -111,28 +111,38 @@ public class Main {
                         GraphicsCardForBuild gpu = new GraphicsCardForBuild(specs[1], Integer.parseInt(specs[3]), Integer.parseInt(specs[4]), Integer.parseInt(specs[5])
                                 , Double.parseDouble(specs[6]));
                         partCart.add(gpu);
+
                     } else if (pcComponent.getName().equals("Motherboard")) {
                         MoboForBuild moboSelected = new MoboForBuild(specs[1], specs[2], specs[3], specs[4], Double.parseDouble(specs[5]));
-                        String processorSpecs = Files.readAllLines(selections.toPath()).get(1);
-                        String[] processorSelected = processorSpecs.split(", ");
+                        //Creates an instance of ProcessorBuild to compare socket spec with mobo selection, if they don't match, compatibility exception is thrown
+                        String processorSpecs = Files.readAllLines(selections.toPath()).get(0);
+                        String[] processorSelected = processorSpecs.split("\\|");
                         ProcessorForBuild cpu = new ProcessorForBuild(processorSelected[1], processorSelected[2], processorSelected[3], Double.parseDouble(processorSelected[4]));
-                        try{
-                            moboSelected.compatible(cpu);
-                            break;
-                        }catch (PartCompatibilityException e){
-                            System.err.println("Parts are not compatible " + e.getMessage() );
-                        }
+                        moboSelected.compatible(cpu);
                         partCart.add(moboSelected);
 
                     } else if (pcComponent.getName().equals("Memory")) {
                         RAMForBuild ramSelected = new RAMForBuild(specs[1], specs[2], Double.parseDouble(specs[6]));
+                        //Creates an instance of MoboForBuild to compare RAM type spec with RAM selection, if they don't match, compatibility exception is thrown
+                        String moboSpecs = Files.readAllLines(selections.toPath()).get(2);
+                        String[] moboSelected = moboSpecs.split("\\|");
+                        MoboForBuild mobo = new MoboForBuild(moboSelected[1], moboSelected[2], moboSelected[3], moboSelected[4], Double.parseDouble(moboSelected[5]));
+                        ramSelected.compatible(mobo);
                         partCart.add(ramSelected);
+
                     } else if (pcComponent.getName().equals("SSD")) {
                         SSDForBuild ssdSelected = new SSDForBuild(specs[1], Double.parseDouble(specs[4]));
                         partCart.add(ssdSelected);
                     } else if (pcComponent.getName().equals("PowerSupply")) {
                         PSUForBuild psuSelected = new PSUForBuild(specs[1], Integer.parseInt(specs[2]), Double.parseDouble(specs[5]));
+                        //Creates an instance of GraphicsCardForBuild to compare Wattage spec of gpu with power supply selection, if they don't match, exception is thrown
+                        String gpuSpecs = Files.readAllLines(selections.toPath()).get(1);
+                        String[] gpuSelected = gpuSpecs.split("\\|");
+                        GraphicsCardForBuild gpu = new GraphicsCardForBuild(gpuSelected[1], Integer.parseInt(gpuSelected[3]), Integer.parseInt(gpuSelected[4]),
+                                Integer.parseInt(gpuSelected[5]), Double.parseDouble(gpuSelected[6]));
+                        psuSelected.compatible(gpu);
                         partCart.add(psuSelected);
+
                     } else if (pcComponent.getName().equals("Case")) {
                         CaseForBuild caseSelected = new CaseForBuild(specs[1], specs[2], Integer.parseInt(specs[5]), Integer.parseInt(specs[6]), Double.parseDouble(specs[8]));
                         partCart.add(caseSelected);
@@ -149,32 +159,22 @@ public class Main {
                     System.out.println(specs[1] + ", which costs $" + specs[specs.length - 1] + ", has been added to your cart");
                     System.out.println();
 
+
                     //adds user selections to the their selection file
                     try (PrintWriter userSelections = new PrintWriter(new FileOutputStream(selections, true))) {
-                        userSelections.println(Arrays.toString(specs));
+                        userSelections.println(lineSelected);
                     }catch (FileNotFoundException e){
                         System.err.println("Unable to open file for writing");
                     }
 
-                    //if(Files.readAllLines())
-                    /*
-                    try(Scanner fileReader = new Scanner(selections)){
-                        while (fileReader.hasNextLine()){
-                            String lineOfInput = fileReader.nextLine();
-                            System.out.println(lineOfInput);
-                        }
-                    }
-
-                }catch (IOException e){
-                    System.err.println("Input or output issue found");
-
-
-                     */
                 }
                 //catches incorrect number selections if they are empty lines or lines with unusable info ie. title lines
                 catch (IndexOutOfBoundsException | NumberFormatException e){
                     System.err.println("Number entered is not a selectable line, please try again");
                     System.out.println();
+                }catch (PartCompatibilityException e){
+                    System.err.println("Compatibility issue");
+                    System.err.println(e.getMessage());
                 } catch (IOException e) {
                     throw new RuntimeException(e);
 

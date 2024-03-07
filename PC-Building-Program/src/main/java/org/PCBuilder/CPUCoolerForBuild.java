@@ -5,6 +5,7 @@ public class CPUCoolerForBuild implements Purchasable{
     private int size;
     private double price;
 
+
     public CPUCoolerForBuild(String model, int size, double price) {
         this.model = model;
         this.size = size;
