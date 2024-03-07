@@ -1,7 +1,126 @@
 package org.PCBuilder;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
 public class Main {
     public static void main(String[] args) {
-        System.out.println("Hello world!");
+
+        //Colors to be used on lines for files
+        final String ANSI_RESET = "\u001B[0m";
+        final String ANSI_GREEN = "\u001B[32m";
+        final String ANSI_CYAN = "\u001B[36m";
+
+
+        //Create file objects for each file that will be shown to the user
+        File PCCase = new File("PCPartFiles/Case");
+        File cpuCooler = new File("PCPartFiles/CPU Cooler");
+        File fans = new File("PCPartFiles/Fans");
+        File graphicsCard = new File("PCPartFiles/GraphicsCard");
+        File memory = new File("PCPartFiles/Memory");
+        File motherboard = new File("PCPartFiles/Motherboard");
+        File powerSupply = new File("PCPartFiles/PowerSupply");
+        File processor = new File("PCPartFiles/Processor");
+        File drive = new File("PCPartFiles/SSD");
+
+        //Make a list of all files to be used
+        List<File> pcComponents = new ArrayList<>();
+        pcComponents.add(processor);
+        pcComponents.add(graphicsCard);
+        pcComponents.add(motherboard);
+        pcComponents.add(memory);
+        pcComponents.add(drive);
+        pcComponents.add(powerSupply);
+        pcComponents.add(PCCase);
+        pcComponents.add(cpuCooler);
+        pcComponents.add(fans);
+
+        //Introduce program to user
+        System.out.println("                           *** Welcome to the PC builder program ***");
+        System.out.println("This application is designed to help a user pick all the pieces they need to build their own Gaming PC");
+        System.out.println("We will provide options, important info for each choice, and price points for each part needed to complete the " +
+                "build, and keep a running total of the cost of the selected parts.");
+
+        Cart partCart = new Cart();
+        //Loops through each component file for the user to view and select from
+        for (File pcComponent : pcComponents) {
+            System.out.println("Press enter to view our " + pcComponent.getName() + " options");
+            Scanner input = new Scanner(System.in);
+            input.nextLine();
+            try (Scanner fileReader = new Scanner(pcComponent)) {
+                int lineNumber = 0;
+                while (fileReader.hasNextLine()) {
+                    String lineOfInput = fileReader.nextLine();
+                    if (lineOfInput.contains("0")) {
+                        if (lineNumber % 2 == 0) {
+                            System.out.println(ANSI_CYAN + lineNumber + ":      " + lineOfInput + ANSI_RESET);
+                        } else {
+                            System.out.println(ANSI_GREEN + lineNumber + ":      " + lineOfInput + ANSI_RESET);
+                        }
+                    } else {
+                        System.out.println(ANSI_CYAN + "      " + lineOfInput + ANSI_RESET);
+                    }
+
+                    lineNumber++;
+                }
+            } catch (FileNotFoundException e) {
+                System.err.println("The file does not exist");
+            }
+            boolean lineNotFound = true;
+            while (lineNotFound){
+                try {
+                    //DONT forget to fix exception throw for numbers before items selectable
+                    System.out.println("Please enter the line number of the part you would like to select");
+                    int partLineSelected = Integer.parseInt(input.nextLine());
+                    String lineSelected = Files.readAllLines(pcComponent.toPath()).get(partLineSelected);
+                    String[] specs = lineSelected.split("\\|");
+                    System.out.println(specs[1] + ", which costs $" + specs[specs.length - 1] + ", has been added to your cart");
+                    System.out.println();
+                    if(pcComponent.getName().equals("Processor")){
+                        ProcessorForBuild cpu = new ProcessorForBuild(specs[1], specs[2], specs[3], Double.parseDouble(specs[4]));
+                        partCart.add(cpu);
+                    } else if (pcComponent.getName().equals("GraphicsCard")) {
+                        GraphicsCardForBuild gpu = new GraphicsCardForBuild(specs[1], Integer.parseInt(specs[3]), Integer.parseInt(specs[4]), Integer.parseInt(specs[5])
+                                , Double.parseDouble(specs[6]));
+                        partCart.add(gpu);
+                    } else if (pcComponent.getName().equals("Motherboard")) {
+                        MoboForBuild moboSelected = new MoboForBuild(specs[1], specs[2], specs[3], specs[4], Double.parseDouble(specs[5]));
+                        partCart.add(moboSelected);
+                    } else if (pcComponent.getName().equals("Memory")) {
+                        RAMForBuild ramSelected = new RAMForBuild(specs[1], specs[2], Double.parseDouble(specs[6]));
+                        partCart.add(ramSelected);
+                    } else if (pcComponent.getName().equals("SSD")) {
+                        SSDForBuild ssdSelected = new SSDForBuild(specs[1], Double.parseDouble(specs[4]));
+                        partCart.add(ssdSelected);
+                    } else if (pcComponent.getName().equals("PowerSupply")) {
+                        PSUForBuild psuSelected = new PSUForBuild(specs[1], Integer.parseInt(specs[2]), Double.parseDouble(specs[5]));
+                        partCart.add(psuSelected);
+                    } else if (pcComponent.getName().equals("Case")) {
+                        CaseForBuild caseSelected = new CaseForBuild(specs[1], specs[2], Integer.parseInt(specs[5]), Integer.parseInt(specs[6]), Double.parseDouble(specs[8]));
+                        partCart.add(caseSelected);
+                    } else if (pcComponent.getName().equals("CPU Cooler")) {
+                        CPUCoolerForBuild coolerSelected = new CPUCoolerForBuild(specs[1], Integer.parseInt(specs[3]), Double.parseDouble(specs[5]));
+                        partCart.add(coolerSelected);
+                    }else{
+                        FansForBuild fanSelected = new FansForBuild(specs[1], Integer.parseInt(specs[2]), Integer.parseInt(specs[3]), Double.parseDouble(specs[6]));
+                        partCart.add(fanSelected);
+                    }
+                    lineNotFound = false;
+
+
+                }catch (IOException e){
+                    System.err.println("Input or output issue found");
+                }catch (IndexOutOfBoundsException e){
+                    System.err.println("Number entered is not a selectable line, please try again");
+                    System.out.println();
+                }
+            }
+        }
+        System.out.println(partCart.receipt());
     }
 }
