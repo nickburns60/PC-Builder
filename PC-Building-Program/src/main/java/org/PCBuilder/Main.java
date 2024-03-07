@@ -1,10 +1,10 @@
 package org.PCBuilder;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import javax.annotation.processing.Processor;
+import java.io.*;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
@@ -28,6 +28,9 @@ public class Main {
         File processor = new File("PCPartFiles/Processor");
         File drive = new File("PCPartFiles/SSD");
 
+        //Create file object to hold all user part selections
+        File selections = new File("PCPartFiles/Selections");
+
         //Make a list of all files to be used
         List<File> pcComponents = new ArrayList<>();
         pcComponents.add(processor);
@@ -46,41 +49,61 @@ public class Main {
         System.out.println("We will provide options, important info for each choice, and price points for each part needed to complete the " +
                 "build, and keep a running total of the cost of the selected parts.");
 
+        //Create a cart to put all selected parts into
         Cart partCart = new Cart();
+
         //Loops through each component file for the user to view and select from
         for (File pcComponent : pcComponents) {
+
+            //Informs user what part they will be picking next
             System.out.println("Press enter to view our " + pcComponent.getName() + " options");
+            //Makes sure program doesn't print file contents until user is ready
             Scanner input = new Scanner(System.in);
             input.nextLine();
+            //Opens current file in file list
             try (Scanner fileReader = new Scanner(pcComponent)) {
+                //Initializes line number
                 int lineNumber = 0;
+
+                //Loops until the file has no more lines
                 while (fileReader.hasNextLine()) {
                     String lineOfInput = fileReader.nextLine();
+
+                    //Ensures only selectable lines have a line number attached
                     if (lineOfInput.contains("0")) {
+                        //if else used to swap colors each line to make file easier to read
                         if (lineNumber % 2 == 0) {
                             System.out.println(ANSI_CYAN + lineNumber + ":      " + lineOfInput + ANSI_RESET);
                         } else {
                             System.out.println(ANSI_GREEN + lineNumber + ":      " + lineOfInput + ANSI_RESET);
                         }
+
+                        //If line is not selectable, it prints without a number and in cyan
                     } else {
                         System.out.println(ANSI_CYAN + "      " + lineOfInput + ANSI_RESET);
                     }
-
+                    //Increments line number
                     lineNumber++;
                 }
             } catch (FileNotFoundException e) {
                 System.err.println("The file does not exist");
             }
+
+            //Initializes lineNotFound to ensure loop starts correctly
             boolean lineNotFound = true;
+            System.out.println("Please enter the line number of the part you would like to select");
+            //Loops until usable line is selected
             while (lineNotFound){
                 try {
-                    //DONT forget to fix exception throw for numbers before items selectable
-                    System.out.println("Please enter the line number of the part you would like to select");
+                    //sets users line number to variable
                     int partLineSelected = Integer.parseInt(input.nextLine());
+                    //if()
+                    //reads entire current file and sets selected line to string variable
                     String lineSelected = Files.readAllLines(pcComponent.toPath()).get(partLineSelected);
+                    //splits variable into separate parts, each one is its own specification
                     String[] specs = lineSelected.split("\\|");
-                    System.out.println(specs[1] + ", which costs $" + specs[specs.length - 1] + ", has been added to your cart");
-                    System.out.println();
+
+                    //if else statements to catch and assign specs to classes that correspond with the current part being selected
                     if(pcComponent.getName().equals("Processor")){
                         ProcessorForBuild cpu = new ProcessorForBuild(specs[1], specs[2], specs[3], Double.parseDouble(specs[4]));
                         partCart.add(cpu);
@@ -90,7 +113,17 @@ public class Main {
                         partCart.add(gpu);
                     } else if (pcComponent.getName().equals("Motherboard")) {
                         MoboForBuild moboSelected = new MoboForBuild(specs[1], specs[2], specs[3], specs[4], Double.parseDouble(specs[5]));
+                        String processorSpecs = Files.readAllLines(selections.toPath()).get(1);
+                        String[] processorSelected = processorSpecs.split(", ");
+                        ProcessorForBuild cpu = new ProcessorForBuild(processorSelected[1], processorSelected[2], processorSelected[3], Double.parseDouble(processorSelected[4]));
+                        try{
+                            moboSelected.compatible(cpu);
+                            break;
+                        }catch (PartCompatibilityException e){
+                            System.err.println("Parts are not compatible " + e.getMessage() );
+                        }
                         partCart.add(moboSelected);
+
                     } else if (pcComponent.getName().equals("Memory")) {
                         RAMForBuild ramSelected = new RAMForBuild(specs[1], specs[2], Double.parseDouble(specs[6]));
                         partCart.add(ramSelected);
@@ -110,17 +143,50 @@ public class Main {
                         FansForBuild fanSelected = new FansForBuild(specs[1], Integer.parseInt(specs[2]), Integer.parseInt(specs[3]), Double.parseDouble(specs[6]));
                         partCart.add(fanSelected);
                     }
+                    //Confirms user selected a usable line and ends while loop for current part
                     lineNotFound = false;
+                    //Informs user the part they selected is added to their cart
+                    System.out.println(specs[1] + ", which costs $" + specs[specs.length - 1] + ", has been added to your cart");
+                    System.out.println();
 
+                    //adds user selections to the their selection file
+                    try (PrintWriter userSelections = new PrintWriter(new FileOutputStream(selections, true))) {
+                        userSelections.println(Arrays.toString(specs));
+                    }catch (FileNotFoundException e){
+                        System.err.println("Unable to open file for writing");
+                    }
+
+                    //if(Files.readAllLines())
+                    /*
+                    try(Scanner fileReader = new Scanner(selections)){
+                        while (fileReader.hasNextLine()){
+                            String lineOfInput = fileReader.nextLine();
+                            System.out.println(lineOfInput);
+                        }
+                    }
 
                 }catch (IOException e){
                     System.err.println("Input or output issue found");
-                }catch (IndexOutOfBoundsException e){
+
+
+                     */
+                }
+                //catches incorrect number selections if they are empty lines or lines with unusable info ie. title lines
+                catch (IndexOutOfBoundsException | NumberFormatException e){
                     System.err.println("Number entered is not a selectable line, please try again");
                     System.out.println();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+
                 }
             }
         }
+        //Prints final receipt showing all selected items, their prices, and the total cost
         System.out.println(partCart.receipt());
+        //Resets selections file for next use
+        try (PrintWriter userSelections = new PrintWriter(selections)) {
+        }catch (FileNotFoundException e){
+            System.err.println("Unable to open file for writing");
+        }
     }
 }

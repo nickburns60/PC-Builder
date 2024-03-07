@@ -31,6 +31,14 @@ public class MoboForBuild implements Purchasable{
         return compatibleRAM;
     }
 
+
+    public void compatible(ProcessorForBuild processor) throws PartCompatibilityException{
+        if (!socket.equals(processor.getSocket())){
+            throw new PartCompatibilityException("Selected part " + "'" + model + "' does not have a 'socket' type " +
+                    "compatible with the processor you selected.");
+        }
+    }
+
     @Override
     public String toString(){
         return model + "    $" + price;
