@@ -60,6 +60,7 @@ public class Main {
             //Makes sure program doesn't print file contents until user is ready
             Scanner input = new Scanner(System.in);
             input.nextLine();
+
             //Opens current file in file list
             try (Scanner fileReader = new Scanner(pcComponent)) {
                 //Initializes line number
@@ -71,8 +72,63 @@ public class Main {
 
                     //Ensures only selectable lines have a line number attached
                     if (lineOfInput.contains("0")) {
-                        //if else used to swap colors each line to make file easier to read
-                        if (lineNumber % 2 == 0) {
+                        //Filters out any motherboards not compatible with selected processor
+                        if(pcComponent.getName().equals("Motherboard")){
+                            //reads entire written file and sets selected line that matches needed part to string variable
+                            String processorSpecs = Files.readAllLines(selections.toPath()).get(0);
+                            String[] processorSelected = processorSpecs.split("\\|");
+                            ProcessorForBuild cpu = new ProcessorForBuild(processorSelected[1], processorSelected[2], processorSelected[3], Double.parseDouble(processorSelected[4]));
+                            String[] specsOfLine = lineOfInput.split("\\|");
+                            if(specsOfLine[2].equals(cpu.getSocket())){
+                                //Class made to swap line colors each line
+                                LinePrinter line = new LinePrinter(lineNumber, lineOfInput);
+                            }
+                            //Filters out RAM not compatible with motherboard
+                        } else if (pcComponent.getName().equals("Memory")) {
+                            String moboSpecs = Files.readAllLines(selections.toPath()).get(2);
+                            String[] moboSelected = moboSpecs.split("\\|");
+                            MoboForBuild mobo = new MoboForBuild(moboSelected[1], moboSelected[2], moboSelected[3], moboSelected[4], Double.parseDouble(moboSelected[5]));
+                            String[] specsOfLine = lineOfInput.split("\\|");
+                            if(specsOfLine[2].equals(mobo.getCompatibleRAM())){
+                                LinePrinter line = new LinePrinter(lineNumber, lineOfInput);
+                            }
+                            //Filters out psu with less wattage than gpu recommendation
+                        } else if (pcComponent.getName().equals("PowerSupply")) {
+                            String gpuSpecs = Files.readAllLines(selections.toPath()).get(1);
+                            String[] gpuSelected = gpuSpecs.split("\\|");
+                            GraphicsCardForBuild gpu = new GraphicsCardForBuild(gpuSelected[1], Integer.parseInt(gpuSelected[3]), Integer.parseInt(gpuSelected[4]),
+                                    Integer.parseInt(gpuSelected[5]), Double.parseDouble(gpuSelected[6]));
+                            String[] specsOfLine = lineOfInput.split("\\|");
+                            if(Integer.parseInt(specsOfLine[2]) >= gpu.getRecommendedPSU()){
+                                LinePrinter line = new LinePrinter(lineNumber, lineOfInput);
+                            }
+                            //Filters out coolers that are too big to fit in selected pc case
+                        } else if (pcComponent.getName().equals("CPU Cooler")) {
+                            String caseSpecs = Files.readAllLines(selections.toPath()).get(6);
+                            String[] caseSelected = caseSpecs.split("\\|");
+                            CaseForBuild pcCase = new CaseForBuild(caseSelected[1], caseSelected[2], Integer.parseInt(caseSelected[5]),
+                                    Integer.parseInt(caseSelected[6]), Double.parseDouble(caseSelected[8]));
+                            String[] specsOfLine = lineOfInput.split("\\|");
+                            if(Integer.parseInt(caseSelected[5]) > Integer.parseInt(specsOfLine[3])){
+                                LinePrinter line = new LinePrinter(lineNumber, lineOfInput);
+                            }
+                            //If the user selected a case with no fans, this makes sure they purchase at least 3
+                        } else if (pcComponent.getName().equals("Fans")) {
+                            String caseSpecs = Files.readAllLines(selections.toPath()).get(6);
+                            String[] caseSelected = caseSpecs.split("\\|");
+                            CaseForBuild pcCase = new CaseForBuild(caseSelected[1], caseSelected[2], Integer.parseInt(caseSelected[5]),
+                                    Integer.parseInt(caseSelected[6]), Double.parseDouble(caseSelected[8]));
+                            String[] specsOfLine = lineOfInput.split("\\|");
+                            if(Integer.parseInt(caseSelected[7]) < 2){
+                                if(Integer.parseInt(specsOfLine[3]) > 1){
+                                    LinePrinter line = new LinePrinter(lineNumber, lineOfInput);
+                                }
+                            }else {
+                                LinePrinter line = new LinePrinter(lineNumber, lineOfInput);
+                            }
+                        }
+                        //Swaps line colors for any part that isn't checked above
+                        else if (lineNumber % 2 == 0) {
                             System.out.println(ANSI_CYAN + lineNumber + ":      " + lineOfInput + ANSI_RESET);
                         } else {
                             System.out.println(ANSI_GREEN + lineNumber + ":      " + lineOfInput + ANSI_RESET);
@@ -87,6 +143,8 @@ public class Main {
                 }
             } catch (FileNotFoundException e) {
                 System.err.println("The file does not exist");
+            } catch (IOException e) { //Catches issues while reading lines from the file that writes as program runs
+                throw new RuntimeException(e);
             }
 
             //Initializes lineNotFound to ensure loop starts correctly
@@ -97,7 +155,6 @@ public class Main {
                 try {
                     //sets users line number to variable
                     int partLineSelected = Integer.parseInt(input.nextLine());
-                    //if()
                     //reads entire current file and sets selected line to string variable
                     String lineSelected = Files.readAllLines(pcComponent.toPath()).get(partLineSelected);
                     //splits variable into separate parts, each one is its own specification
@@ -114,20 +171,12 @@ public class Main {
 
                     } else if (pcComponent.getName().equals("Motherboard")) {
                         MoboForBuild moboSelected = new MoboForBuild(specs[1], specs[2], specs[3], specs[4], Double.parseDouble(specs[5]));
-                        //Creates an instance of ProcessorBuild to compare socket spec with mobo selection, if they don't match, compatibility exception is thrown
-                        String processorSpecs = Files.readAllLines(selections.toPath()).get(0);
-                        String[] processorSelected = processorSpecs.split("\\|");
-                        ProcessorForBuild cpu = new ProcessorForBuild(processorSelected[1], processorSelected[2], processorSelected[3], Double.parseDouble(processorSelected[4]));
-                        moboSelected.compatible(cpu);
+
                         partCart.add(moboSelected);
 
                     } else if (pcComponent.getName().equals("Memory")) {
                         RAMForBuild ramSelected = new RAMForBuild(specs[1], specs[2], Double.parseDouble(specs[6]));
-                        //Creates an instance of MoboForBuild to compare RAM type spec with RAM selection, if they don't match, compatibility exception is thrown
-                        String moboSpecs = Files.readAllLines(selections.toPath()).get(2);
-                        String[] moboSelected = moboSpecs.split("\\|");
-                        MoboForBuild mobo = new MoboForBuild(moboSelected[1], moboSelected[2], moboSelected[3], moboSelected[4], Double.parseDouble(moboSelected[5]));
-                        ramSelected.compatible(mobo);
+
                         partCart.add(ramSelected);
 
                     } else if (pcComponent.getName().equals("SSD")) {
@@ -136,12 +185,7 @@ public class Main {
 
                     } else if (pcComponent.getName().equals("PowerSupply")) {
                         PSUForBuild psuSelected = new PSUForBuild(specs[1], Integer.parseInt(specs[2]), Double.parseDouble(specs[5]));
-                        //Creates an instance of GraphicsCardForBuild to compare Wattage spec of gpu with power supply selection, if they don't match, exception is thrown
-                        String gpuSpecs = Files.readAllLines(selections.toPath()).get(1);
-                        String[] gpuSelected = gpuSpecs.split("\\|");
-                        GraphicsCardForBuild gpu = new GraphicsCardForBuild(gpuSelected[1], Integer.parseInt(gpuSelected[3]), Integer.parseInt(gpuSelected[4]),
-                                Integer.parseInt(gpuSelected[5]), Double.parseDouble(gpuSelected[6]));
-                        psuSelected.compatible(gpu);
+
                         partCart.add(psuSelected);
 
                     } else if (pcComponent.getName().equals("Case")) {

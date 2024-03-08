@@ -2,7 +2,6 @@ Motherboard Options
 
 Brand|Model|Socket|Form Factor|RAM Supported|Price
 
-Intel Compatible:
 Gigabyte|B760I Aorus Pro|LGA 1700|Mini-ITX|DDR4|210.00
 ASUS|Z790-I ROG Strix Wifi|LGA 1700|Mini-ITX|DDR5|470.00
 MSI|B760M-P Pro|LGA 1700|microATX|DDR4|100.00
@@ -16,7 +15,6 @@ MSI|PRO Z690-A|LGA 1700|ATX|DDR4|210.00
 ASRock|Z790 PG Lightning D4|LGA 1700|ATX|DDR4|200.00
 Gigabyte|Z690 Aorus Elite AX|LGA 1700|ATX|DDR4|270.00
 
-AMD Compatible:
 Gigabyte|A520I AC|AM4|Mini-ITX|DDR4|100.00
 ASRock|B550M-ITX/ac|AM4|Mini-ITX|DDR4|130.00
 ASUS|B650E-I ROG Strix WiFi|AM5|Mini-ITX|DDR5|330.00

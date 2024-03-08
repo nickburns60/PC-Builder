@@ -12,15 +12,6 @@ public class RAMForBuild implements Purchasable{
         this.price = price;
     }
 
-    public void compatible(MoboForBuild mobo) throws PartCompatibilityException{
-        if(!type.equals(mobo.getCompatibleRAM())){
-            throw new PartCompatibilityException("Selected part " + "'" + model + "' does not have a 'RAM type' " +
-                    "compatible with the motherboard you selected. \n Please make sure 'RAM Type' on your " +
-                    "selected motherboard matches the memory you choose." +
-                    "This is the RAM type for your motherboard: " + mobo.getCompatibleRAM());
-        }
-    }
-
     public String getModel() {
         return model;
     }
