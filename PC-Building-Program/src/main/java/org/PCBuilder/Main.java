@@ -133,6 +133,7 @@ public class Main {
                     } else if (pcComponent.getName().equals("SSD")) {
                         SSDForBuild ssdSelected = new SSDForBuild(specs[1], Double.parseDouble(specs[4]));
                         partCart.add(ssdSelected);
+
                     } else if (pcComponent.getName().equals("PowerSupply")) {
                         PSUForBuild psuSelected = new PSUForBuild(specs[1], Integer.parseInt(specs[2]), Double.parseDouble(specs[5]));
                         //Creates an instance of GraphicsCardForBuild to compare Wattage spec of gpu with power supply selection, if they don't match, exception is thrown
@@ -145,7 +146,13 @@ public class Main {
 
                     } else if (pcComponent.getName().equals("Case")) {
                         CaseForBuild caseSelected = new CaseForBuild(specs[1], specs[2], Integer.parseInt(specs[5]), Integer.parseInt(specs[6]), Double.parseDouble(specs[8]));
+
+                        String moboSpecs = Files.readAllLines(selections.toPath()).get(2);
+                        String[] moboSelected = moboSpecs.split("\\|");
+                        MoboForBuild mobo = new MoboForBuild(moboSelected[1], moboSelected[2], moboSelected[3], moboSelected[4], Double.parseDouble(moboSelected[5]));
+                        caseSelected.compatible(mobo);
                         partCart.add(caseSelected);
+
                     } else if (pcComponent.getName().equals("CPU Cooler")) {
                         CPUCoolerForBuild coolerSelected = new CPUCoolerForBuild(specs[1], Integer.parseInt(specs[3]), Double.parseDouble(specs[5]));
                         partCart.add(coolerSelected);

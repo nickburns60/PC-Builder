@@ -13,11 +13,11 @@ public class PSUForBuild implements Purchasable {
     }
 
     public void compatible(GraphicsCardForBuild gpu) throws PartCompatibilityException{
-        if (wattage != (gpu.getRecommendedPSU())){
+        if (wattage < (gpu.getRecommendedPSU())){
             throw new PartCompatibilityException("Selected part " + "'" + model + "' does not have a minimum 'Wattage' " +
-                    "required for the 'Graphics Card' you selected. \n Please make sure the 'recommended power supply' on your " +
-                    " selected graphics card matches the 'Wattage' on the power supply you choose." +
-                    "This is the socket from your processor: " + gpu.getRecommendedPSU());
+                    "required for the 'Graphics Card' you selected. \n Please make sure the 'Wattage' on the power supply you choose " +
+                    "meets the minimum requirement for your selected graphics card." +
+                    "\n Your power supply must have a Wattage of at least: " + gpu.getRecommendedPSU() + " watts");
         }
     }
 

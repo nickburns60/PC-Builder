@@ -2,7 +2,7 @@ package org.PCBuilder;
 
 public class CaseForBuild implements Purchasable{
     private String model;
-    private String enclosureType;
+    private String formFactorCompatible;
     private int length;
     private int width;
     private double price;
@@ -10,10 +10,18 @@ public class CaseForBuild implements Purchasable{
 
     public CaseForBuild(String model, String enclosureType, int length, int width, double price) {
         this.model = model;
-        this.enclosureType = enclosureType;
+        this.formFactorCompatible = enclosureType;
         this.length = length;
         this.width = width;
         this.price = price;
+    }
+    public void compatible(MoboForBuild mobo) throws PartCompatibilityException{
+        if (mobo.getFormFactor().equals("ATX") && formFactorCompatible.equals("microATX")){
+            throw new PartCompatibilityException("Selected part " + "'" + model + "' does not support" +
+                    "the form factor of the motherboard you've selected. \nPlease make sure 'Form Factor' on your " +
+                    "selected motherboard matches 'Form Factor' on the Case you choose." +
+                    "\nThis is the 'Form Factor' compatible with your motherboard: " + mobo.getFormFactor());
+        }
     }
 
     public String getModel() {
@@ -21,7 +29,7 @@ public class CaseForBuild implements Purchasable{
     }
 
     public String getEnclosureType() {
-        return enclosureType;
+        return formFactorCompatible;
     }
 
     public int getLength() {
