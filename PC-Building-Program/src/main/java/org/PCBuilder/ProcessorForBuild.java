@@ -22,9 +22,6 @@ public class ProcessorForBuild implements Purchasable{
         return socket;
     }
 
-    public String getCompatibleRAM() {
-        return compatibleRAM;
-    }
     @Override
     public double getPrice() {
         return price;

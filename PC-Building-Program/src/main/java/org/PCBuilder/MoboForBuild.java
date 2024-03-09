@@ -20,10 +20,6 @@ public class MoboForBuild implements Purchasable{
         return model;
     }
 
-    public String getSocket() {
-        return socket;
-    }
-
     public String getFormFactor() {
         return formFactor;
     }

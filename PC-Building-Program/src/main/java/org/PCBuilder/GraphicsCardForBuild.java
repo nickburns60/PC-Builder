@@ -20,14 +20,6 @@ public class GraphicsCardForBuild implements Purchasable{
         return model;
     }
 
-    public int getLength() {
-        return length;
-    }
-
-    public int getWidth() {
-        return width;
-    }
-
     public int getRecommendedPSU() {
         return recommendedPSU;
     }

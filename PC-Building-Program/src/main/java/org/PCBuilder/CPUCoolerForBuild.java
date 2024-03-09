@@ -5,7 +5,6 @@ public class CPUCoolerForBuild implements Purchasable{
     private int size;
     private double price;
 
-
     public CPUCoolerForBuild(String model, int size, double price) {
         this.model = model;
         this.size = size;
@@ -14,10 +13,6 @@ public class CPUCoolerForBuild implements Purchasable{
 
     public String getModel() {
         return model;
-    }
-
-    public int getSize() {
-        return size;
     }
 
     @Override

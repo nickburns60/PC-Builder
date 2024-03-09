@@ -23,14 +23,6 @@ public class FansForBuild implements Purchasable{
         return model;
     }
 
-    public int getSize() {
-        return size;
-    }
-
-    public int getNumOfFans() {
-        return numOfFans;
-    }
-
     @Override
     public String toString(){
         return model + "    $" + price;

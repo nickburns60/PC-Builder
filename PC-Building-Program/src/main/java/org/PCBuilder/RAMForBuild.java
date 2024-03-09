@@ -5,7 +5,6 @@ public class RAMForBuild implements Purchasable{
     private String type;
     private double price;
 
-
     public RAMForBuild(String model, String type, double price) {
         this.model = model;
         this.type = type;
@@ -14,10 +13,6 @@ public class RAMForBuild implements Purchasable{
 
     public String getModel() {
         return model;
-    }
-
-    public String getType() {
-        return type;
     }
 
     @Override

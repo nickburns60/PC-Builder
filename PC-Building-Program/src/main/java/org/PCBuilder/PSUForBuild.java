@@ -5,7 +5,6 @@ public class PSUForBuild implements Purchasable {
     private int wattage;
     private double price;
 
-
     public PSUForBuild(String model, int wattage, double price) {
         this.model = model;
         this.wattage = wattage;
@@ -14,10 +13,6 @@ public class PSUForBuild implements Purchasable {
 
     public String getModel() {
         return model;
-    }
-
-    public int getWattage() {
-        return wattage;
     }
 
     @Override
